@@ -34,7 +34,8 @@ EXPOSE 22
 
 # VOLUME [/Users/ramarajpandian/code/src/:/code/src]
 
-COPY ./as-server_entrypoint.sh /entrypoint.sh
+COPY ./as-server_entrypoint.sh /as-server_entrypoint.sh
+RUN ["chmod", "+x", "/as-server_entrypoint.sh"]
 COPY ./aerospike.template.conf /aerospike.template.conf
 
 RUN mkdir /etc/aerospike
@@ -47,7 +48,7 @@ RUN gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 595
 RUN chmod +x /tini
 
 #ENTRYPOINT ["/usr/local/bin/dumb-init", "--", "passwd -d root && /usr/sbin/sshd -D && /entrypoint.sh"]
-ENTRYPOINT ["/tini", "--", "/entrypoint.sh"]
+ENTRYPOINT ["/tini", "--", "/as-server_entrypoint.sh"]
 # Execute the run script in foreground mode
 CMD ["/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64/bin/asd"]
 

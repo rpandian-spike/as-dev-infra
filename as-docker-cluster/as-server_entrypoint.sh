@@ -66,8 +66,8 @@ if [ "$1" = '/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64
                 	let NETLINK_COUNT=NETLINK_COUNT+1
         	fi
 	done
-	IFC=`/sbin/ifconfig | grep "inet"`
-	echo "IFC: $IFC"
+	#IFC=`/sbin/ifconfig | grep "inet"`
+	#echo "IFC: $IFC"
 	IP=`/sbin/ifconfig | grep "inet" | grep "broadcast" | awk -F " " '{print $2}' | awk '{print $1}'`
 	echo "Node IP: $IP:$SERVICE_PORT"
 	echo "link $NETLINK state $(cat /sys/class/net/${NETLINK}/operstate) in ${NETLINK_COUNT}"

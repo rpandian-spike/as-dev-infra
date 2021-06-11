@@ -1,0 +1,2 @@
+enable;
+manage acl create user ram password ram roles data-admin user-admin sys-admin read-write read-write-udf;

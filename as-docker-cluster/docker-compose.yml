@@ -19,7 +19,7 @@ services:
         cap_add: 
             - SYS_PTRACE
         networks:
-            cluster:
+            as-network:
                 aliases:
                     - node1.asserver.com
     as-server-node2:
@@ -41,7 +41,7 @@ services:
         cap_add: 
             - SYS_PTRACE
         networks:
-            cluster:
+            as-network:
                 aliases:
                     - node2.asserver.com
     as-server-node3:
@@ -63,13 +63,38 @@ services:
         cap_add: 
             - SYS_PTRACE
         networks:
-            cluster:
+            as-network:
                 aliases:
                     - node3.asserver.com
+    as-client-node1:
+        depends_on:
+            - "as-server-node1"
+            - "as-server-node2"
+            - "as-server-node3"
+        image: as-client-centos8-dev:v1
+        build: .
+        volumes:
+            - /Users/ramarajpandian/code/src/:/code/src
+        environment:
+            - DEBUGPY_PORT=4001
+        ports:
+            - "2225:22"
+            - "4001:4001"
+        #network_mode: host
+        cap_add: 
+            - SYS_PTRACE
+        networks:
+            as-network:
+                aliases:
+                    - node1.asclient.com
 networks:
-    cluster:
+    as-network:
         driver: bridge
-        name: as-bridge
+        ipam:
+            config:
+                - subnet: 172.28.0.0/16
+                  ip_range: 172.28.0.0/24
+                  gateway: 172.28.0.255
 #How to
 #docker image build -f ./Dockerfile-client.yml -t as-client-centos8-dev:v1 .
 #docker image build -f ./Dockerfile-.yml -t as-server-centos8-dev:v1 .

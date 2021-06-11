@@ -12,3 +12,5 @@ pyasn1==0.4.2
 pyOpenSSL==18.0.0
 toml==0.9.4
 yappi==0.98
+debugpy
+

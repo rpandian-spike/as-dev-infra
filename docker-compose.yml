@@ -1,0 +1,96 @@
+version: "3"
+services:
+    as-server-node1:
+        image: as-server-centos8-dev:v1
+        build: .
+        volumes:
+            - /Users/ramarajpandian/code/src/:/code/src
+        environment:
+            - SERVICE_PORT=3000
+            - HB_PORT=9920
+            - FABRIC_PORT=3002
+            - INFO_PORT=3003
+        ports:
+            - "2222:22"
+        #     - "3000:3000"
+        #     - "3002:3002"
+        #     - "3003:3003"
+        # network_mode: host
+        cap_add: 
+            - SYS_PTRACE
+        networks:
+            cluster:
+                aliases:
+                    - node1.asserver.com
+    as-server-node2:
+        image: as-server-centos8-dev:v1
+        build: .
+        volumes:
+            - /Users/ramarajpandian/code/src/:/code/src
+        environment:
+            - SERVICE_PORT=3010
+            - HB_PORT=9920
+            - FABRIC_PORT=3012
+            - INFO_PORT=3013
+        ports:
+            - "2223:22"
+        #     - "3010:3010"
+        #     - "3012:3012"
+        #     - "3013:3013"
+        #network_mode: host
+        cap_add: 
+            - SYS_PTRACE
+        networks:
+            cluster:
+                aliases:
+                    - node2.asserver.com
+    as-server-node3:
+        image: as-server-centos8-dev:v1
+        build: .
+        volumes:
+            - /Users/ramarajpandian/code/src/:/code/src
+        environment:
+            - SERVICE_PORT=3020
+            - HB_PORT=9920
+            - FABRIC_PORT=3022
+            - INFO_PORT=3023
+        ports:
+            - "2224:22"
+        #     - "3020:3020"
+        #     - "3022:3022"
+        #     - "3023:3023"
+        #network_mode: host
+        cap_add: 
+            - SYS_PTRACE
+        networks:
+            cluster:
+                aliases:
+                    - node3.asserver.com
+networks:
+    cluster:
+        driver: bridge
+        name: as-bridge
+#How to
+#docker image build -f ./Dockerfile-client.yml -t as-client-centos8-dev:v1 .
+#docker image build -f ./Dockerfile-.yml -t as-server-centos8-dev:v1 .
+
+# docker-dev ramarajpandian$ docker network create \
+# >   --driver=bridge \
+# >   --subnet=172.28.0.0/16 \
+# >   --ip-range=172.28.5.0/24 \
+# >   --gateway=172.28.5.254 \
+# >   as-bridge
+
+# docker container stop docker-dev_as-server-node1_1
+# docker container stop docker-dev_as-server-node2_1
+# docker container stop docker-dev_as-server-node3_1
+# docker container stop docker-dev_as-client-node1_1
+
+# docker container rm docker-dev_as-server-node1_1
+# docker container rm docker-dev_as-server-node2_1
+# docker container rm docker-dev_as-server-node3_1
+# docker container rm docker-dev_as-client-node1_1
+
+#docker-compose up
+#docker run -it --network=as-bridge -v /Users/ramarajpandian/code/src:/code/src as-client-centos8-dev:v1 /bin/bash
+#docker exec -it docker-dev_as-server-node3_1 /usr/bin/bash

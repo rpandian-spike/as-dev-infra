@@ -1,0 +1,65 @@
+#!/bin/bash
+# Usage:
+#	cmd <#servers>
+#
+if [ $# -eq 0 ]
+then
+echo "$0 : You must supply number of servers"
+exit 1
+fi
+echo killall asd
+killall asd
+echo rm -rf logs
+rm -rf logs
+echo rm -rf scripts
+rm -rf scripts
+VALSUP=/media/psf/Home/code/src/aerospike/enterprise/aerospike-server/as/etc/valgrind.supp
+ASD=/media/psf/Home/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64/bin/asd
+SERVERLOCAL=`pwd`
+LOGS=$SERVERLOCAL/logs
+NSERVERS=$1
+IP=`/sbin/ifconfig | grep "inet addr" | grep "Bcast" | awk -F ":" '{print $2}' | awk '{print $1}'`
+echo "Node IP: $IP"
+pwd=`pwd`
+echo scripts created in: $pwd/scripts
+echo logs created in: $pwd/logs
+mkdir logs
+mkdir logs/devs
+mkdir scripts
+for ((  i = 1 ;  i <= $NSERVERS;  i++  ))
+do
+	let LISTEN_PORT=3000+$((i-1))*10
+	let TLS_PORT=4333+$((i-1))*10
+	FABRIC_PORT=$(($LISTEN_PORT+1))
+	MESH_PORT=$(($FABRIC_PORT+1))
+	INFO_PORT=$(($MESH_PORT+1))
+	echo "generating asd$i.conf: $LISTEN_PORT,$FABRIC_PORT,$MESH_PORT,$INFO_PORT"
+	sed -e "s/#mesh-address 10.1.1.1/mesh-address $IP/" asd.conf > scripts/asd$i.conf
+	sed -i -e "s/port 3000/port $LISTEN_PORT/" scripts/asd$i.conf
+	sed -i -e "s/port 3001/port $FABRIC_PORT/" scripts/asd$i.conf
+	sed -i -e "s/port 3002/port $MESH_PORT/" scripts/asd$i.conf
+	sed -i -e "s/port 3003/port $INFO_PORT/" scripts/asd$i.conf
+	sed -i -e "s/static-cluster-size 5/static-cluster-size $NSERVERS/" scripts/asd$i.conf
+	sed -i -e "s&<logfile>&$LOGS/asd$i.log&" scripts/asd$i.conf
+	sed -i -e "s&<pidfile>&$LOGS/asd$i.pid&" scripts/asd$i.conf
+	sed -i -e "s&<work directory>&$LOGS/cache$i&" scripts/asd$i.conf
+	sed -i -e "s&<lua user dir>&$LOGS/lua$i&" scripts/asd$i.conf
+	sed -i -e "s&<tls-sub-port>&$TLS_PORT&" scripts/asd$i.conf
+	sed -i -e "s&data.cl&$pwd/logs/data$i.cl&" scripts/asd$i.conf
+	sed -i -e "s&bb.cl&$pwd/logs/bb$i.cl&" scripts/asd$i.conf
+	sed -i -e "s&xsegment.cl&$pwd/logs/xsegment$i.cl&" scripts/asd$i.conf
+	sed -i -e "s&ysegment.cl&$pwd/logs/ysegment$i.cl&" scripts/asd$i.conf
+	sed -i -e "s&zsegment.cl&$pwd/logs/zsegment$i.cl&" scripts/asd$i.conf
+	sed -i -e "s&mydevice&$pwd/logs/devs/mydevice$i&" scripts/asd$i.conf
+	echo "$ASD --config-file=$pwd/scripts/asd$i.conf --cold-start --instance=$i &" > scripts/run$i
+    
+	echo "sudo valgrind --leak-check=yes --gen-suppressions=yes --suppressions=$VALSUP --db-attach=yes $ASD --config-file $SERVERLOCAL/scripts/asd$i.conf" > scripts/valrun$i
+	echo "sudo gdb $ASD --command=$SERVERLOCAL/scripts/gdb$i.ini" > scripts/grun$i
+	echo "run --config-file=$SERVERLOCAL/scripts/asd$i.conf" > scripts/gdb$i.ini
+	chmod u+x scripts/run$i
+	chmod u+x scripts/valrun$i
+	chmod u+x scripts/grun$i
+	mkdir -p $pwd/logs/cache$i/smd
+	mkdir -p $pwd/logs/lua$i
+	mkdir $pwd/logs/devs/mydevice$i
+done

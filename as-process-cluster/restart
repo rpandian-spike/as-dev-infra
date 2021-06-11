@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]
+then
+  echo "Usage: $0 <procid> <index>"
+  exit 1
+fi
+
+kill $1
+./start 1 $2

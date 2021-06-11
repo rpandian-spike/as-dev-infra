@@ -1,0 +1,105 @@
+# Citrusleaf database configuration file
+
+# Service configuration; this stanza MUST come first
+service {
+	user bnichols
+	group bnichols
+	service-threads 8
+	proto-fd-max 15000
+	info-threads 2
+	batch-max-requests 10000
+	cluster-name bncluster
+	work-directory <work directory>
+}
+
+# Log configuration
+logging {
+	file <logfile> {
+		context any info
+#		context udf detail
+#		context query detail
+#		context info detail
+#		context scan detail
+#		context rw detail
+	}
+#
+#	console {
+#		context any info
+#	}
+}
+
+network {
+	#tls bncluster {		
+	#	cert-file /home/bnichols/test/x509_certificates/ca/subject/cluster_chain.pem
+	#	key-file /home/bnichols/test/x509_certificates/ca/subject/ClusterName/key.pem
+	#	ca-file /home/bnichols/test/x509_certificates/ca/subject/Platinum/cacert.pem
+	#}
+	service {
+		address any
+		port 3000
+		#tls-port <tls-sub-port>
+		#tls-name bncluster
+		#tls-authenticate-client any
+		
+		#tls-authenticate-client false
+		#tls-protocols TLSv1.2
+		#tls-mode encrypt-only
+		#tls-cipher-suite aNULL
+		#tls-name <cluster-name>
+		#tls-mode authenticate-server
+		#tls-name bncluster
+		#tls-certfile /home/bnichols/test/x509_certificates/ca/subject/cluster_chain.pem
+		#tls-keyfile /home/bnichols/test/x509_certificates/ca/subject/ClusterName/key.pem
+		#tls-name <hostname>
+		#tls-certfile /home/bnichols/test/x509_certificates/ca/subject/multi_chain.pem
+		#tls-keyfile /home/bnichols/test/x509_certificates/ca/subject/MultiServer/key.pem
+		#tls-name <hostname>
+		#tls-certfile /home/bnichols/test/x509_certificates/ca/subject/wild_chain.pem
+		#tls-keyfile /home/bnichols/test/x509_certificates/ca/subject/WildServer/key.pem
+		# java mutual authentication
+		#tls-mode authenticate-both
+		#tls-cafile /home/bnichols/client.cert
+		# C# mutual authentication
+		#tls-mode authenticate-both
+		#tls-cafile /home/bnichols/rootcs.cer
+		# C mutual authentication
+		#tls-mode authenticate-both
+		#tls-cafile /home/bnichols/test/x509_certificates/ca/subject/Platinum/cacert.pem
+	}
+	heartbeat {
+		mode multicast
+		multicast-group 239.1.92.17
+		port 9920
+		interval 150
+		timeout 10
+	}
+	fabric {
+		address any
+		port 3001
+	}
+	info {
+		address any
+		port 3003
+	}
+}
+
+namespace test {
+	replication-factor 2
+	default-ttl 3d
+	allow-ttl-without-nsup true
+	memory-size 512000000 # ~512M
+	storage-engine memory
+}
+
+mod-lua {
+    user-path <lua user dir>
+}
+
+security {
+	enable-security true
+	enable-quotas true
+	log {
+		report-violation true
+	}
+}
+

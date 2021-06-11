@@ -1,0 +1,137 @@
+# Citrusleaf database configuration file
+
+# Service configuration; this stanza MUST come first
+service {
+	user bnichols
+	group bnichols
+	transaction-queues 4
+	transaction-threads-per-queue 4
+	proto-fd-max 15000
+	info-threads 2
+	batch-max-requests 10000
+	cluster-name bncluster
+	work-directory <work directory>
+}
+
+# Log configuration
+logging {
+	file <logfile> {
+		context any info
+#		context udf detail
+#		context query detail
+#		context info detail
+#		context scan detail
+#		context rw detail
+	}
+#
+#	console {
+#		context any info
+#	}
+}
+
+network {
+	#tls bncluster {		
+	#	cert-file /home/bnichols/test/x509_certificates/ca/subject/cluster_chain.pem
+	#	key-file /home/bnichols/test/x509_certificates/ca/subject/ClusterName/key.pem
+	#	ca-file /home/bnichols/test/x509_certificates/ca/subject/Platinum/cacert.pem
+	#}
+	service {
+		address any
+		port 3000
+		#tls-port <tls-sub-port>
+		#tls-name bncluster
+		#tls-authenticate-client any
+		
+		#tls-authenticate-client false
+		#tls-protocols TLSv1.2
+		#tls-mode encrypt-only
+		#tls-cipher-suite aNULL
+		#tls-name <cluster-name>
+		#tls-mode authenticate-server
+		#tls-name bncluster
+		#tls-certfile /home/bnichols/test/x509_certificates/ca/subject/cluster_chain.pem
+		#tls-keyfile /home/bnichols/test/x509_certificates/ca/subject/ClusterName/key.pem
+		#tls-name <hostname>
+		#tls-certfile /home/bnichols/test/x509_certificates/ca/subject/multi_chain.pem
+		#tls-keyfile /home/bnichols/test/x509_certificates/ca/subject/MultiServer/key.pem
+		#tls-name <hostname>
+		#tls-certfile /home/bnichols/test/x509_certificates/ca/subject/wild_chain.pem
+		#tls-keyfile /home/bnichols/test/x509_certificates/ca/subject/WildServer/key.pem
+		# java mutual authentication
+		#tls-mode authenticate-both
+		#tls-cafile /home/bnichols/client.cert
+		# C# mutual authentication
+		#tls-mode authenticate-both
+		#tls-cafile /home/bnichols/rootcs.cer
+		# C mutual authentication
+		#tls-mode authenticate-both
+		#tls-cafile /home/bnichols/test/x509_certificates/ca/subject/Platinum/cacert.pem
+	}
+	heartbeat {
+		mode multicast
+		multicast-group 239.1.92.17
+		port 9920
+		interval 150
+		timeout 10
+	}
+	fabric {
+		address any
+		port 3001
+	}
+	info {
+		address any
+		port 3003
+	}
+}
+
+namespace test {
+	replication-factor 2
+	memory-size 512000000 # ~512M
+	default-ttl 2592000   		# default 30 days expiration
+	storage-engine memory
+}
+
+mod-lua {
+    system-path /home/bnichols/server/modules/lua-core/src
+    user-path <lua user dir>
+}
+
+security {
+    enable-security true
+    ldap {
+# have to enable it
+        enable-ldap true
+# base dn will be different for every jumpcloud instance
+        base-dn o=5a7b4b08f4f3414e69eb5f8c,dc=jumpcloud,dc=com
+        server ldap://ldap.jumpcloud.com:389
+# this is the default, but we want to use tls
+        disable-tls false
+## to create this cert file:
+## first get your cert from jumpcloud
+# echo -n | openssl s_client -connect ldap.jumpcloud.com:636 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/jumpcloud.chain.pem
+## it is signed by godaddy so you have to get their bundle also
+# curl -sS https://certs.godaddy.com/repository/gd_bundle-g2-g1.crt >> /tmp/jumpcloud.chain.pem
+## stick it wherever you keep your certs
+# sudo cp /tmp/jumpcloud.chain.pem /etc/ssl/certs/jumpcloud.chain.pem
+           tls-cacertfile /etc/ssl/certs/jumpcloud.chain.pem
+# this is the dn of the aerospike "trusted user" which is used to query for roles
+        role-query-user-dn uid=as_user,ou=Users,o=5a7b4b08f4f3414e69eb5f8c,dc=jumpcloud,dc=com
+# cleartext password of the same user
+        role-query-user-password  aerospike
+# set this to true to treat the OUs of the users dn as possible roles
+        role-query-search-ou true
+# this query will be used to search for other entries to use for roles.
+# in this case the %s will be substituted with the user's full dn
+        role-query-pattern (&(objectClass=groupOfNames)(member=%s))
+# this is set to true to use the full dn for the above substitution (otherwise it would be the username only)
+        role-query-pattern-use-dn true
+# how often to poll for new roles. We are doing it every 10 seconds for development
+        polling-period 10
+# pattern to look up user. %s will be replaced with the username
+        user-entry-pattern (uid=%s)
+      }
+    log {
+        report-violation true
+    }
+}
+

@@ -1,0 +1,40 @@
+asd.conf
+Default Aerospike configuration file. The user and group fields should be changed from bnichols to your username.
+
+asd.conf.*
+Alternate Aerospike configuration files for TLS, LDAP, User Authentication and combinations thereof.
+
+cmd <node count>
+Copy start script(s) for each node into scripts directory. The VALSUP and ASD variables need to be configured before running this script. Example: ./cmd 1
+
+start <node count> <start index>
+Run Aerospike server script(s). The logs are located in the logs directory. Example: ./start 1 1
+
+restart <proc id> <index>
+Restart an Aerospike server node at server index. Example: ./restart 20109 1
+
+tl <index>
+Tail the Aerospike log for server index. Example: ./tl 1
+
+kill
+Kill all Aerospike server nodes (asd processes). Example: ./kill
+
+
+To build enterprise edition:
+
+1) Set EEREPO environment variable. Example: export EEREPO=/home/bnichols/aerospike-server-enterprise
+
+2) Clone aerospike-server-enterprise github repo (git@github.com:citrusleaf/aerospike-server-enterprise.git).
+
+3) cd aerospike-server-enterprise
+
+4) git submodule update --init
+
+5) cd ../aerospike-server
+
+6) git submodule update --init
+
+7) make clean
+
+8) make +ee
+

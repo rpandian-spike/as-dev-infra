@@ -23,8 +23,34 @@
             },
             "sourceFileMap": {
                     "/code/src/aerospike/enterprise/":"${workspaceRoot}"
+            }
+        },
+        {
+            "name": "SSH Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "cwd": "/code/src/aerospike/enterprise/scan_partition-python/test/new_tests/",
+            "program": "python3",
+            "args": [
+                "-mpytest",
+                "./test_scan.py",
+                "-ktest_scan_with_max_records_policy"
+            ],
+            "pipeTransport": {
+                "debuggerPath": "/usr/bin/gdb",
+                "pipeProgram": "/usr/bin/ssh",
+                "externalConsole": true,
+                "pipeArgs": [
+                    "root@127.0.0.1",
+                    "-p",
+                    "2225"
+                ],
+                "pipeCwd": "/usr/bin/"
             },
-          },
+            "sourceFileMap": {
+                    "/code/src/aerospike/enterprise/":"/code/src/aerospike/enterprise/"
+            }
+        },
         {
             "name": "Python: Current File",
             "type": "python",
@@ -108,6 +134,51 @@
             "sourceFileMap": {
                     "/code/src/aerospike/enterprise/":"${workspaceRoot}"
             }
-          }      
+        },
+        {
+            "name": "C++ Docker Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            // "cwd": "/code/src/aerospike/enterprise/scan_partition-c/examples/scan_examples/standard/target/",
+            // "program": "./example",
+            // "args": [
+            //     "-has-s1.as-network.com",
+            //     "-Uram",
+            //     "-Pram"
+            // ],
+            "cwd": "/code/src/aerospike/enterprise/scan_partition-python/test/new_tests/",
+            "program": "python3",
+            "args": [
+                "-mpytest",
+                "./test_scan.py",
+                "-ktest_scan_with_max_records_policy"
+            ],
+            "pipeTransport": {
+                "debuggerPath": "/usr/bin/gdb",
+                "pipeCwd": "/usr/bin/",
+                "pipeProgram": "docker",
+                "pipeArgs": [
+                    "exec", 
+                    "-i", 
+                    "as-docker-cluster_as-client-node1_1", 
+                    "bash",
+                    "-c"
+                ],
+                "cwd": "${workspaceFolder}",
+                "environment": [],
+                "externalConsole": "integratedConsole",
+                "MIMode": "gdb",
+                "setupCommands": [
+                    {
+                        "description": "Enable pretty-printing for gdb",
+                        "text": "-enable-pretty-printing",
+                        "ignoreFailures": true
+                    }
+                ]
+            },
+            "sourceFileMap": {
+                    "/code/src/aerospike/enterprise/":"${workspaceRoot}"
+            }
+        }         
     ]
 }

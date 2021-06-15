@@ -21,7 +21,7 @@ services:
         networks:
             as-network:
                 aliases:
-                    - node1.asserver.com
+                    - as-s1.as-network.com
     as-server-node2:
         image: as-server-centos8-dev:v1
         build: .
@@ -43,7 +43,7 @@ services:
         networks:
             as-network:
                 aliases:
-                    - node2.asserver.com
+                    - as-s2.as-network.com
     as-server-node3:
         image: as-server-centos8-dev:v1
         build: .
@@ -65,7 +65,7 @@ services:
         networks:
             as-network:
                 aliases:
-                    - node3.asserver.com
+                    - as-s3.as-network.com
     as-client-node1:
         depends_on:
             - "as-server-node1"
@@ -86,7 +86,7 @@ services:
         networks:
             as-network:
                 aliases:
-                    - node1.asclient.com
+                    - as-c1.as-network.com
 networks:
     as-network:
         driver: bridge

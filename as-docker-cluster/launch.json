@@ -5,6 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            //on container run: python3 -m debugpy --listen 0.0.0.0:4001 --wait-for-client ./examples/client/putget_async.py
+            "name": "Python: debugpy Attach",
+            "type": "python",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 4001
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "/code/src/aerospike/enterprise/"
+                }
+            ]
+        },
+        {
             "name": "C++ SSH Attach in as-server",
             "type": "cppdbg",
             "request": "attach",
@@ -22,7 +38,7 @@
                 "pipeCwd": ""
             },
             "sourceFileMap": {
-                    "/code/src/aerospike/enterprise/":"${workspaceRoot}"
+                "/code/src/aerospike/enterprise/": "${workspaceRoot}"
             }
         },
         {
@@ -32,9 +48,7 @@
             "cwd": "/code/src/aerospike/enterprise/scan_partition-python/test/new_tests/",
             "program": "python3",
             "args": [
-                "-mpytest",
-                "./test_scan.py",
-                "-ktest_scan_with_max_records_policy"
+                " -m pytest /code/src/aerospike/enterprise/scan_partition-python/test/new_tests/test_scan_pagination.py"
             ],
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
@@ -48,7 +62,7 @@
                 "pipeCwd": "/usr/bin/"
             },
             "sourceFileMap": {
-                    "/code/src/aerospike/enterprise/":"/code/src/aerospike/enterprise/"
+                "/code/src/aerospike/enterprise/": "/code/src/aerospike/enterprise/"
             }
         },
         {
@@ -57,7 +71,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "internalConsole",
-            "justMyCode":false
+            "justMyCode": false
         },
         {
             "name": "Python: Attach using Process Id",
@@ -103,7 +117,7 @@
             ]
         },
         {
-            "name": "C++ Docker Attach",
+            "name": "C++ Docker ASD Attach",
             "type": "cppdbg",
             "request": "attach",
             "program": "/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64/bin/asd",
@@ -113,9 +127,9 @@
                 "pipeCwd": "${workspaceRoot}",
                 "pipeProgram": "docker",
                 "pipeArgs": [
-                    "exec", 
-                    "-i", 
-                    "docker-dev_as-server-node3_1", 
+                    "exec",
+                    "-i",
+                    "as-docker-cluster_as-server-node1_1", //"docker-dev_as-server-node3_1",
                     "sh",
                     "-c"
                 ],
@@ -132,35 +146,58 @@
                 ]
             },
             "sourceFileMap": {
-                    "/code/src/aerospike/enterprise/":"${workspaceRoot}"
+                "/code/src/aerospike/enterprise/": "${workspaceRoot}"
             }
         },
         {
             "name": "C++ Docker Launch",
             "type": "cppdbg",
             "request": "launch",
-            // "cwd": "/code/src/aerospike/enterprise/scan_partition-c/examples/scan_examples/standard/target/",
+
+            // "cwd": "/code/src/aerospike/enterprise/aerospike-client-c/examples/async_examples/async_get/target/",
             // "program": "./example",
             // "args": [
             //     "-has-s1.as-network.com",
             //     "-Uram",
             //     "-Pram"
             // ],
-            "cwd": "/code/src/aerospike/enterprise/scan_partition-python/test/new_tests/",
-            "program": "python3",
+
+            // "cwd": "/code/src/aerospike/enterprise/aerospike-client-python/test/new_tests/",
+            // "program": "python3",
+            // "args": [
+            //     "-mpytest",
+            //     "./test_scan_pagination.py",
+            //     "-ktest_scan_pagination_with_existent_ns_and_set"
+            // ],
+
+            // "cwd": "/code/src/aerospike/enterprise/aerospike-client-python/examples/client",
+            // "program": "python3",
+            // "args": [
+            //     "./scan_partition.py",
+            //     "-has-s1.as-network.com",
+            //     "-Uadmin",
+            //     "-Padmin",
+            //     "-i1000"
+            // ],
+
+            //-exec source /code/src/aerospike/enterprise/cpython-39/build/python.exe-gdb.py
+            //-exec py-bt
+            //-exec bt
+            "cwd": "/code/src/aerospike/enterprise/rp-async/",
+            "program": "/usr/local/bin/python3.9d",
             "args": [
-                "-mpytest",
-                "./test_scan.py",
-                "-ktest_scan_with_max_records_policy"
+                "./examples/client/get_async.py",
+                "-c1"
             ],
+
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
                 "pipeCwd": "/usr/bin/",
                 "pipeProgram": "docker",
                 "pipeArgs": [
-                    "exec", 
-                    "-i", 
-                    "as-docker-cluster_as-client-node1_1", 
+                    "exec",
+                    "-i",
+                    "as-docker-cluster_as-client-node1_1",
                     "bash",
                     "-c"
                 ],
@@ -177,8 +214,10 @@
                 ]
             },
             "sourceFileMap": {
-                    "/code/src/aerospike/enterprise/":"${workspaceRoot}"
+                "/code/src/aerospike/enterprise/": "${workspaceRoot}",
+                //"/code/src/aerospike/enterprise/aerospike-client-c/": "${workspaceRoot}/rp-async/aerospike-client-c",
+                "/code/src/": "${workspaceRoot}/../../"
             }
-        }         
+        }
     ]
 }

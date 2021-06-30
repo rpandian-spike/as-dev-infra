@@ -8,7 +8,7 @@ passwd -d root
 IP=`/sbin/ifconfig | grep "inet" | grep "broadcast" | awk -F " " '{print $2}' | awk '{print $1}'`
 echo "Node IP: $IP"
 
-#/usr/bin/python3 -m debugpy --listen 0.0.0.0:$DEBUGPY_PORT /usr/bin/odoo --db_user=odoo --db_host=db --db_password=odoo &
+#python3 -m debugpy --listen 0.0.0.0:$DEBUGPY_PORT --wait-for-client ./examples/client/get_async.py 
 
 #cd /code/src/aerospike/enterprise/scan_partition-python
 #python3 /code/src/aerospike/enterprise/scan_partition-python/rp-setup.py build --force

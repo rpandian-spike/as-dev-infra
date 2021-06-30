@@ -9,14 +9,28 @@ RUN \
   dnf -y group install "Development Tools" \
   && dnf -y install openssl openssh-server openssl-devel \
   && dnf -y install libarchive cmake rsync libcurl-devel zip \
-  && dnf -y install python38 python38-devel \
+  && dnf -y install python38 python38-devel  python38-debug \
   && dnf -y install initscripts net-tools psmisc passwd \
   && dnf -y install wget openldap-devel \
   && dnf -y --enablerepo=powertools install lua-devel \
   && dnf -y install tcl tk tcl-devel tk-devel \
   && dnf -y install libffi libffi-devel gdbm-devel tk-devel \
-  && dnf -y install xz-devel sqlite-devel readline-devel bzip2-devel ncurses-devel zlib-devel
+  && dnf -y install xz-devel sqlite-devel readline-devel bzip2-devel ncurses-devel zlib-devel \
+  && dnf -y install gcc-toolset-9-binutils \
+  && dnf -y install https://extras.getpagespeed.com/release-el8-latest.rpm libevent-devel
   
+# for gdb build/install ../configure --prefix=/usr --with-system-readline --with-python=/usr/bin/python3 && 
+# make -j12 && make -C gdb/doc doxy && make -C gdb install
+# install -d /usr/share/doc/gdb-10.2 && rm -rf gdb/doc/doxy/xml && cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.2
+RUN \
+ dnf config-manager --set-enabled powertools \
+ && dnf -y install texi2html texinfo doxygen
+# install the built debugger
+RUN \
+ cd /code/src/gdb-10.2/build/ \
+ && make -C gdb install \
+ && install -d /usr/share/doc/gdb-10.2 && rm -rf gdb/doc/doxy/xml && cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.2
+
 COPY ./requirements.txt /requirements.txt
 RUN python3.8 -m pip install -r /requirements.txt
 
@@ -29,7 +43,8 @@ RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config && \
     ssh-keygen -A
 
 EXPOSE 22 
-#expose debygpy port, refer entrypoint.sh
+# run the below command in container and connect to it using vscode
+# python3 -m debugpy --listen 0.0.0.0:4001 --wait-for-client ./examples/client/get_async.py
 EXPOSE 4001
 
 # VOLUME [/Users/ramarajpandian/code/src/:/code/src]

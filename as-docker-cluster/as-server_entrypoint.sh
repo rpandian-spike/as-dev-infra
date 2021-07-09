@@ -77,6 +77,7 @@ if [ "$1" = '/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64
 	#service ssh start &
 	passwd -d root &
 	/usr/sbin/sshd -D &
+	#valgrind --tool=callgrind -v --dump-every-bb=1000000000 --callgrind-out-file=${AS_CLUSTER_NODE_DIR}/asd-callgrind.out "$@" &
 	"$@" &
 	wait
 	#set -- "$@" --foreground

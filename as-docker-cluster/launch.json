@@ -117,10 +117,10 @@
             ]
         },
         {
-            "name": "C++ Docker ASD Attach",
+            "name": "C++ Docker Attach",
             "type": "cppdbg",
             "request": "attach",
-            "program": "/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64/bin/asd",
+            //"program": "/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64/bin/asd",
             "processId": "${command:pickRemoteProcess}",
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
@@ -129,7 +129,7 @@
                 "pipeArgs": [
                     "exec",
                     "-i",
-                    "as-docker-cluster_as-server-node1_1", //"docker-dev_as-server-node3_1",
+                    "as-docker-cluster_as-client-node1_1", //as-docker-cluster_as-server-node1_1
                     "sh",
                     "-c"
                 ],
@@ -146,7 +146,10 @@
                 ]
             },
             "sourceFileMap": {
-                "/code/src/aerospike/enterprise/": "${workspaceRoot}"
+                "/code/src/cpython-39/": "${workspaceRoot}/cpython-39/",
+                "/code/src/aerospike/enterprise/": "${workspaceRoot}",
+                //"/code/src/aerospike/enterprise/aerospike-client-c/": "${workspaceRoot}/rp-async/aerospike-client-c",
+                "/code/src/": "${workspaceRoot}/",
             }
         },
         {
@@ -162,13 +165,13 @@
             //     "-Pram"
             // ],
 
-            // "cwd": "/code/src/aerospike/enterprise/aerospike-client-python/test/new_tests/",
-            // "program": "python3",
-            // "args": [
-            //     "-mpytest",
-            //     "./test_scan_pagination.py",
-            //     "-ktest_scan_pagination_with_existent_ns_and_set"
-            // ],
+            "cwd": "/code/src/aerospike/enterprise/rp-async/test/new_tests/",
+            "program": "python3",
+            "args": [
+                "-mpytest",
+                "./test_put_async.py",
+                "-ktest_neg_put_with_wrong_ns_and_set"
+            ],
 
             // "cwd": "/code/src/aerospike/enterprise/aerospike-client-python/examples/client",
             // "program": "python3",
@@ -183,12 +186,18 @@
             //-exec source /code/src/aerospike/enterprise/cpython-39/build/python.exe-gdb.py
             //-exec py-bt
             //-exec bt
-            "cwd": "/code/src/aerospike/enterprise/rp-async/",
-            "program": "/usr/local/bin/python3.9d",
-            "args": [
-                "./examples/client/get_async.py",
-                "-c1"
-            ],
+            // "cwd": "/code/src/aerospike/enterprise/rp-async/",
+            // "program": "/usr/local/bin/python3.9d",
+            // "args": [
+            //     "./examples/client/get_async.py",
+            //     "-c1"
+            // ],
+
+            // "cwd": "/code/src/aerospike/enterprise/cpython-39/",
+            // "program": "/usr/local/bin/python3.9d",
+            // "args": [
+            //     "/code/src/aerospike/enterprise/cpython-39/Lib/test/test_coroutines.py"
+            // ],
 
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
@@ -217,6 +226,7 @@
                 "/code/src/aerospike/enterprise/": "${workspaceRoot}",
                 //"/code/src/aerospike/enterprise/aerospike-client-c/": "${workspaceRoot}/rp-async/aerospike-client-c",
                 "/code/src/": "${workspaceRoot}/../../"
+                //"/code/src/cpython-39/": "${workspaceRoot}/..../cpython-39/"
             }
         }
     ]

@@ -2,4 +2,5 @@ enable;
 manage acl create role quota-4k-2k-role priv read-write-udf;
 manage acl create user ram password ram roles data-admin user-admin sys-admin read-write read-write-udf quota-4k-2k-role;
 manage acl quotas role quota-4k-2k-role read 4000 write 2000;
+manage acl create user ram1 password ram1 roles data-admin user-admin sys-admin read-write read-write-udf;
 show users;

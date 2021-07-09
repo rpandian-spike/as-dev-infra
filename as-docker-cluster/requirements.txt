@@ -13,4 +13,5 @@ pyOpenSSL==18.0.0
 toml==0.9.4
 yappi==0.98
 debugpy
+pytest-asyncio
 

@@ -16,6 +16,6 @@ echo "Node IP: $IP"
 
 sleep 2
 
-/code/src/aerospike/enterprise/aerospike-admin/build/bin/asadm -e asadmn-setup -Uadmin -Padmin -h as-s1.as-network.com
+/code/src/aerospike/enterprise/aerospike-admin/build/bin/asadm -e asadmn-setup -Uadmin -Padmin -h bob-cluster-a
 
 wait

@@ -18,6 +18,10 @@ RUN \
   && dnf -y install xz-devel sqlite-devel readline-devel bzip2-devel ncurses-devel zlib-devel \
   && dnf -y install gcc-toolset-9-binutils \
   && dnf -y install https://extras.getpagespeed.com/release-el8-latest.rpm libevent-devel
+
+# for Java client
+RUN \
+  dnf -y install maven
   
 # for gdb build/install 
 # ../configure --prefix=/usr --with-system-readline --with-python=/usr/bin/python3 && 

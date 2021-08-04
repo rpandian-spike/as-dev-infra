@@ -1,15 +1,19 @@
 version: "3"
 services:
-    as-server-node1:
+    bob-cluster-a:
         image: as-server-centos8-dev:v1
         build: .
         volumes:
             - /Users/ramarajpandian/code/src/:/code/src
         environment:
             - SERVICE_PORT=3000
+            - TLS_SERVICE_PORT=4333
             - HB_PORT=9920
             - FABRIC_PORT=3002
             - INFO_PORT=3003
+            - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
+            - USE_EE=1
+            - TLS_CLUSTER_NAME=bob-cluster-a
         ports:
             - "2222:22"
         #     - "3000:3000"
@@ -22,16 +26,20 @@ services:
             as-network:
                 aliases:
                     - as-s1.as-network.com
-    as-server-node2:
+    bob-cluster-b:
         image: as-server-centos8-dev:v1
         build: .
         volumes:
             - /Users/ramarajpandian/code/src/:/code/src
         environment:
             - SERVICE_PORT=3010
+            - TLS_SERVICE_PORT=4343
             - HB_PORT=9920
             - FABRIC_PORT=3012
             - INFO_PORT=3013
+            - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
+            - USE_EE=1
+            - TLS_CLUSTER_NAME=bob-cluster-b
         ports:
             - "2223:22"
         #     - "3010:3010"
@@ -44,16 +52,20 @@ services:
             as-network:
                 aliases:
                     - as-s2.as-network.com
-    as-server-node3:
+    bob-cluster-c:
         image: as-server-centos8-dev:v1
         build: .
         volumes:
             - /Users/ramarajpandian/code/src/:/code/src
         environment:
             - SERVICE_PORT=3020
+            - TLS_SERVICE_PORT=4353
             - HB_PORT=9920
             - FABRIC_PORT=3022
             - INFO_PORT=3023
+            - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
+            - USE_EE=1
+            - TLS_CLUSTER_NAME=bob-cluster-c
         ports:
             - "2224:22"
         #     - "3020:3020"
@@ -68,15 +80,17 @@ services:
                     - as-s3.as-network.com
     as-client-node1:
         depends_on:
-            - "as-server-node1"
-            - "as-server-node2"
-            - "as-server-node3"
+            - "bob-cluster-a"
+            - "bob-cluster-b"
+            - "bob-cluster-c"
         image: as-client-centos8-dev:v1
         build: .
         volumes:
             - /Users/ramarajpandian/code/src/:/code/src
         environment:
             - DEBUGPY_PORT=4001
+            - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
+            - USE_EE=1
         ports:
             - "2225:22"
             - "4001:4001"

@@ -57,10 +57,11 @@ RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config && \
 #node.js client install
 RUN dnf -y module enable nodejs:12
 RUN dnf -y install nodejs
+RUN npm install -g n
 RUN npm install -g node-gyp
 #build client
 #npm init
-#DOWNLOAD=1 npm install
+#DOWNLOAD=1 npm install -g n
 #node-gyp configure
 #node-gyp build -vv
 #export AEROSPIKE_HOSTS=bob-cluster-a:4333
@@ -73,12 +74,16 @@ EXPOSE 22
 # run the below command in container and connect to it using vscode
 # python3 -m debugpy --listen 0.0.0.0:4001 --wait-for-client ./examples/client/get_async.py
 EXPOSE 4001
+#nodejs debugging
+EXPOSE 9229
 
 COPY ./asadm-setup /asadmn-setup
 COPY ./as-client_entrypoint.sh /as-client_entrypoint.sh
 RUN ["chmod", "+x", "/as-client_entrypoint.sh"]
 
 # VOLUME [/Users/ramarajpandian/code/src/:/code/src]
+
+# WORKDIR /code/src/aerospike/enterprise/
 
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini

@@ -94,6 +94,7 @@ services:
         ports:
             - "2225:22"
             - "4001:4001"
+            - "9229:9229"
         #network_mode: host
         cap_add: 
             - SYS_PTRACE

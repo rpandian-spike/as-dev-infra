@@ -5,6 +5,32 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch via NPM",
+            "runtimeExecutable": "/usr/bin/npm",
+            "cwd": "/code/src/aerospike/enterprise/nodejs-expressions/",
+            "runtimeArgs": [
+                "test",
+                "--",
+                "test/key.js"
+                "--U",
+                "generic_client",
+                "--P",
+                "generic_client",
+                "--h",
+                "bob-cluster-a",
+                "--p",
+                "3000"
+            ],
+            "port": 9229,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/code/src/aerospike/enterprise/",
+            "skipFiles": [
+                "${workspaceFolder}/node_modules/**/*.js"
+            ]
+        },
+        {
             //on container run: python3 -m debugpy --listen 0.0.0.0:4001 --wait-for-client ./examples/client/putget_async.py
             "name": "Python: debugpy Attach",
             "type": "python",
@@ -45,11 +71,47 @@
             "name": "SSH Launch",
             "type": "cppdbg",
             "request": "launch",
-            "cwd": "/code/src/aerospike/enterprise/scan_partition-python/test/new_tests/",
+            "cwd": "/code/src/aerospike/enterprise/dev/test/",
             "program": "python3",
             "args": [
-                " -m pytest /code/src/aerospike/enterprise/scan_partition-python/test/new_tests/test_scan_pagination.py"
+                "-m",
+                "pytest",
+                "./test_batch_get_ops.py",
+                "-vvv"
             ],
+            "pipeTransport": {
+                "debuggerPath": "/usr/bin/gdb",
+                "pipeProgram": "/usr/bin/ssh",
+                "externalConsole": true,
+                "pipeArgs": [
+                    "root@127.0.0.1",
+                    "-p",
+                    "2225"
+                ],
+                "pipeCwd": "/usr/bin/"
+            },
+            "sourceFileMap": {
+                "/code/src/aerospike/enterprise/": "/code/src/aerospike/enterprise/"
+            }
+        },
+        {
+            "name": "SSH Nodejs Launch",
+            "request": "launch",
+            "cwd": "/code/src/aerospike/enterprise/nodejs-expressions/",
+            "program": "npm",
+            "args": [
+                    "test",
+                    "--",
+                    "test/key.js"
+                    "--U",
+                    "generic_client",
+                    "--P",
+                    "generic_client",
+                    "--h",
+                    "bob-cluster-a",
+                    "--p",
+                    "3000"
+                ],
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
                 "pipeProgram": "/usr/bin/ssh",
@@ -120,7 +182,7 @@
             "name": "C++ Docker Attach",
             "type": "cppdbg",
             "request": "attach",
-            //"program": "/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64/bin/asd",
+            "program": "/usr/bin/node",
             "processId": "${command:pickRemoteProcess}",
             "pipeTransport": {
                 "debuggerPath": "/usr/bin/gdb",
@@ -157,6 +219,27 @@
             "type": "cppdbg",
             "request": "launch",
 
+            // "name": "C++ Docker Launch",
+            // "type": "node",
+            // "request": "launch",
+
+            // "runtimeExecutable": "/usr/bin/npm",
+            // "cwd": "/code/src/aerospike/enterprise/nodejs-expressions/",
+            // "program": "/usr/bin/node",
+            // "args": [
+            //     "test",
+            //     "--",
+            //     "test/key.js"
+            //     "--U",
+            //     "generic_client",
+            //     "--P",
+            //     "generic_client",
+            //     "--h",
+            //     "bob-cluster-a",
+            //     "--p",
+            //     "3000"
+            // ],
+
             // "cwd": "/code/src/aerospike/enterprise/aerospike-client-c/examples/async_examples/async_get/target/",
             // "program": "./example",
             // "args": [
@@ -165,13 +248,20 @@
             //     "-Pram"
             // ],
 
-            "cwd": "/code/src/aerospike/enterprise/rp-async/test/new_tests/",
+            "cwd": "/code/src/aerospike/enterprise/dev/test/",
             "program": "python3",
             "args": [
-                "-mpytest",
-                "./test_put_async.py",
-                "-ktest_neg_put_with_wrong_ns_and_set"
+                "-m",
+                "pytest",
+                "./test_batch_get_ops.py",
+                "-vvv"
             ],
+
+            // "cwd": "/code/src/aerospike/enterprise/rp-pki_int/examples/client/",
+            // "program": "python3",
+            // "args": [
+            //     "./get_async.py"
+            // ],
 
             // "cwd": "/code/src/aerospike/enterprise/aerospike-client-python/examples/client",
             // "program": "python3",

@@ -16,6 +16,17 @@ echo "Node IP: $IP"
 
 sleep 2
 
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+source ~/.bashrc
+nvm install 16.14.0
+nvm install 14.19.0
+nvm install 12.22.10
+nvm install 10.20.0
+
+nvm use 14.19.0
+npm install -g node-gyp
+npm install -g --force nodemon
+
 /code/src/aerospike/enterprise/aerospike-admin/build/bin/asadm -e asadmn-setup -Uadmin -Padmin -h bob-cluster-a
 
 wait

@@ -8,25 +8,12 @@ passwd -d root
 IP=`/sbin/ifconfig | grep "inet" | grep "broadcast" | awk -F " " '{print $2}' | awk '{print $1}'`
 echo "Node IP: $IP"
 
-#python3 -m debugpy --listen 0.0.0.0:$DEBUGPY_PORT --wait-for-client ./examples/client/get_async.py 
+export ASD_HOST=${ASD_HOST:-172.17.0.3}
+export AS_INIT=${AS_INIT:-1}
 
-#cd /code/src/aerospike/enterprise/scan_partition-python
-#python3 /code/src/aerospike/enterprise/scan_partition-python/rp-setup.py build --force
-#python3 /code/src/aerospike/enterprise/scan_partition-python/rp-setup.py install --force
-
-sleep 2
-
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-source ~/.bashrc
-nvm install 16.14.0
-nvm install 14.19.0
-nvm install 12.22.10
-nvm install 10.20.0
-
-nvm use 14.19.0
-npm install -g node-gyp
-npm install -g --force nodemon
-
-/code/src/aerospike/enterprise/aerospike-admin/build/bin/asadm -e asadmn-setup -Uadmin -Padmin -h bob-cluster-a
+echo "ASD-Host: $ASD_HOST, InitDB: $AS_INIT"
+if [ "$AS_INIT" = "1" ]; then
+    /code/src/aerospike/enterprise/aerospike-admin/build/bin/asadm -e asadmn-setup -Uadmin -Padmin -h $ASD_HOST
+fi
 
 wait

@@ -52,13 +52,13 @@ ENV USE_EE 1
 # export EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
 # export USE_EE=1
 # export MACOSX_DEPLOYMENT_TARGET=21.2.0
-# USE_JEM=0
-# brew install jemalloc
+# #USE_JEM=0
+# #brew install jemalloc
 # make cleanall
-# make clean+ee
+# make cleanall
 # make +ee
 
-   ENV TINI_VERSION v0.19.0
+ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc /tini.asc
 # RUN gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 \
@@ -71,6 +71,6 @@ ENTRYPOINT ["/tini", "--", "/as-server_entrypoint.sh"]
 CMD ["/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64/bin/asd"]
 
 #How to
-#docker container rm as-server1
-#docker build . -t as-server-centos8-dev:v1
-#docker run -it -v /Users/ramarajpandian/code/src/:/code/src -p 127.0.0.1:3000:3000 --name as-server1 as-server-centos8-dev:v1
+# docker container rm as-server1
+# docker build . -t as-server-centos8-dev:v1
+# docker run -it -v /Users/ramarajpandian/code/src/:/code/src -p 127.0.0.1:3000:3000 --name as-server1 as-server-centos8-dev:v1

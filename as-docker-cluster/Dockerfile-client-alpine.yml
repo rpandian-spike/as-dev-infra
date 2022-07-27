@@ -1,0 +1,68 @@
+#
+# Aerospike Client Dockerfile
+#
+#
+
+FROM node:17.9.0-alpine3.15
+
+RUN apk update && apk upgrade
+RUN apk add alpine-sdk tar xz
+
+RUN apk add --update --no-cache openssh
+RUN apk add --no-cache bash automake libtool m4 autoconf libuv-dev
+RUN apk add --update --no-cache --virtual .tmp-build-deps \
+    gcc libc-dev linux-headers postgresql-dev \
+    && apk add libffi-dev zlib-dev
+
+# RUN apk add python3 python3-dev py3-pip
+COPY ./requirements.txt /requirements.txt
+RUN wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz && \
+    tar xzf Python-3.10.4.tgz && \
+    cd Python-3.10.4 && \
+    ./configure --with-system-ffi --with-computed-gotos --enable-loadable-sqlite-extensions && \
+    make -j 6 && \ 
+    make install && \
+    rm -f Python-3.10.4.tgz 
+
+# RUN apk add --no-cache \
+#         libressl-dev \
+#         musl-dev \
+#         libffi-dev && \
+#         pip3 install --no-cache-dir cryptography==2.1.4 && \
+#         apk del \
+#         libressl-dev \
+#         musl-dev \
+#         libffi-dev
+
+RUN python3 -m pip install -r /requirements.txt
+
+RUN mkdir -p /var/run/sshd && \
+    echo "mkdir -p /var/run/sshd" >> /etc/rc.local
+RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config && \
+    echo 'PermitEmptyPasswords yes' >> /etc/ssh/sshd_config && \
+    echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config && \
+    ssh-keygen -A
+
+# VOLUME [/Users/ramarajpandian/code/src/:/code/src]
+
+EXPOSE 23 
+# run the below command in container and connect to it using vscode
+# python3 -m debugpy --listen 0.0.0.0:4001 --wait-for-client ./examples/client/get_async.py
+EXPOSE 4002
+EXPOSE 9230
+COPY ./asadm-setup /asadmn-setup
+COPY ./as-client_entrypoint.sh /as-client_entrypoint.sh
+RUN ["chmod", "+x", "/as-client_entrypoint.sh"]
+
+# VOLUME [/Users/ramarajpandian/code/src/:/code/src]
+
+RUN apk add --no-cache tini
+RUN chmod +x /as-client_entrypoint.sh
+
+ENTRYPOINT ["/sbin/tini", "--", "/as-client_entrypoint.sh"]
+CMD [""]
+
+#How to
+#docker container rm as-client1
+#docker run -it -v /Users/ramarajpandian/code/src:/code/src as-client-alpine-dev:v1 /bin/bash
+#docker image build -f Dockerfile-client-alpine.yml -t as-client-alpine-dev:v1 .

@@ -4,7 +4,7 @@ services:
         image: as-server-centos8-dev:v1
         build: .
         volumes:
-            - /Users/ramarajpandian/code:/code
+            - /Users/ramarajpandian/code/:/code/
         environment:
             - SERVICE_PORT=3000
             - TLS_SERVICE_PORT=4333
@@ -13,6 +13,7 @@ services:
             - INFO_PORT=3003
             - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
             - USE_EE=1
+            - AS_CLUSTER_NAME=bob-cluster-a
             - TLS_CLUSTER_NAME=bob-cluster-a
             - NAMESPACE=test
         ports:
@@ -27,60 +28,62 @@ services:
             as-network:
                 aliases:
                     - as-s1.as-network.com
-    bob-cluster-b:
-        image: as-server-centos8-dev:v1
-        build: .
-        volumes:
-            - /Users/ramarajpandian/code/:/code/
-        environment:
-            - SERVICE_PORT=3010
-            - TLS_SERVICE_PORT=4343
-            - HB_PORT=9920
-            - FABRIC_PORT=3012
-            - INFO_PORT=3013
-            - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
-            - USE_EE=1
-            - TLS_CLUSTER_NAME=bob-cluster-b
-            - NAMESPACE=test
-        ports:
-            - "2223:22"
-        #     - "3010:3010"
-        #     - "3012:3012"
-        #     - "3013:3013"
-        #network_mode: host
-        cap_add: 
-            - SYS_PTRACE
-        networks:
-            as-network:
-                aliases:
-                    - as-s2.as-network.com
-    bob-cluster-c:
-        image: as-server-centos8-dev:v1
-        build: .
-        volumes:
-            - /Users/ramarajpandian/code/:/code/
-        environment:
-            - SERVICE_PORT=3020
-            - TLS_SERVICE_PORT=4353
-            - HB_PORT=9920
-            - FABRIC_PORT=3022
-            - INFO_PORT=3023
-            - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
-            - USE_EE=1
-            - TLS_CLUSTER_NAME=bob-cluster-c
-            - NAMESPACE=test
-        ports:
-            - "2224:22"
-        #     - "3020:3020"
-        #     - "3022:3022"
-        #     - "3023:3023"
-        #network_mode: host
-        cap_add: 
-            - SYS_PTRACE
-        networks:
-            as-network:
-                aliases:
-                    - as-s3.as-network.com
+    # bob-cluster-b:
+    #     image: as-server-centos8-dev:v1
+    #     build: .
+    #     volumes:
+    #         - /Users/ramarajpandian/code/:/code/
+    #     environment:
+    #         - SERVICE_PORT=3010
+    #         - TLS_SERVICE_PORT=4343
+    #         - HB_PORT=9920
+    #         - FABRIC_PORT=3012
+    #         - INFO_PORT=3013
+    #         - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
+    #         - USE_EE=1
+    #         - AS_CLUSTER_NAME=bob-cluster-a
+    #         - TLS_CLUSTER_NAME=bob-cluster-a
+    #         - NAMESPACE=test
+    #     ports:
+    #         - "2223:22"
+    #     #     - "3010:3010"
+    #     #     - "3012:3012"
+    #     #     - "3013:3013"
+    #     #network_mode: host
+    #     cap_add: 
+    #         - SYS_PTRACE
+    #     networks:
+    #         as-network:
+    #             aliases:
+    #                 - as-s2.as-network.com
+    # bob-cluster-c:
+    #     image: as-server-centos8-dev:v1
+    #     build: .
+    #     volumes:
+    #         - /Users/ramarajpandian/code/:/code/
+    #     environment:
+    #         - SERVICE_PORT=3020
+    #         - TLS_SERVICE_PORT=4353
+    #         - HB_PORT=9920
+    #         - FABRIC_PORT=3022
+    #         - INFO_PORT=3023
+    #         - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
+    #         - USE_EE=1
+    #         - AS_CLUSTER_NAME=bob-cluster-a
+    #         - TLS_CLUSTER_NAME=bob-cluster-a
+    #         - NAMESPACE=test
+    #     ports:
+    #         - "2224:22"
+    #     #     - "3020:3020"
+    #     #     - "3022:3022"
+    #     #     - "3023:3023"
+    #     #network_mode: host
+    #     cap_add: 
+    #         - SYS_PTRACE
+    #     networks:
+    #         as-network:
+    #             aliases:
+    #                 - as-s3.as-network.com
     # importData:
     #     depends_on:
     #         - "bob-cluster-a"
@@ -102,9 +105,10 @@ services:
     as-client-node1:
         depends_on:
             - "bob-cluster-a"
-            - "bob-cluster-b"
-            - "bob-cluster-c"
+            # - "bob-cluster-b"
+            # - "bob-cluster-c"
         image: as-client-centos8-dev:v1
+        # image: as-client-debian11-dev:v1
         build: .
         volumes:
             - /Users/ramarajpandian/code/:/code/
@@ -112,6 +116,8 @@ services:
             - DEBUGPY_PORT=4001
             - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
             - USE_EE=1
+            - AS_INIT=1
+            - ASD_HOST=bob-cluster-a
         ports:
             - "2225:22"
             - "4001:4001"
@@ -125,6 +131,35 @@ services:
             as-network:
                 aliases:
                     - as-c1.as-network.com
+    # as-client-node2:
+    #     depends_on:
+    #         - "bob-cluster-a"
+    #         - "bob-cluster-b"
+    #         - "bob-cluster-c"
+    #         - "as-client-node1"
+    #     image: as-client-alpine-dev:v1
+    #     build: .
+    #     volumes:
+    #         - /Users/ramarajpandian/code/:/code/
+    #     environment:
+    #         - DEBUGPY_PORT=4001
+    #         - EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
+    #         - USE_EE=1
+    #         - AS_INIT=0
+    #         - ASD_HOST=bob-cluster-a
+    #     ports:
+    #         - "2226:22"
+    #         - "4002:4001"
+    #         - "9230:9229"
+    #     #network_mode: host
+    #     cap_add: 
+    #         - SYS_PTRACE
+    #     security_opt:
+    #         - seccomp:unconfined
+    #     networks:
+    #         as-network:
+    #             aliases:
+    #                 - as-c1.as-network.com
 networks:
     as-network:
         driver: bridge
@@ -159,3 +194,5 @@ networks:
 #docker exec -it docker-dev_as-server-node3_1 /usr/bin/bash
 
 #docker run --rm -it --entrypoint bash -v /Users/ramarajpandian/code/src/:/code/src/ as-client-centos8-dev:v1
+
+#docker-compose up --remove-orphans

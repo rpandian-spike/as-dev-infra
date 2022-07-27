@@ -15,9 +15,8 @@ RUN dnf -y update
 RUN dnf -y group install "Development Tools"
 RUN dnf -y install openssl openssh-server openssl-devel
 RUN dnf -y install libarchive cmake rsync libcurl-devel zip
-RUN dnf -y install python38 python38-devel  python38-debug
 RUN dnf -y install initscripts net-tools psmisc passwd
-RUN dnf -y install wget openldap-devel
+RUN dnf -y install openldap-devel
 RUN dnf -y --enablerepo=powertools install lua-devel
 RUN dnf -y install tcl tk tcl-devel tk-devel
 RUN dnf -y install libffi libffi-devel gdbm-devel tk-devel
@@ -36,14 +35,15 @@ RUN dnf -y install https://extras.getpagespeed.com/release-el8-latest.rpm libeve
 # ENV LD_LIBRARY_PATH /usr/local/lib
 # RUN ldconfig
 
-#  RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-#  RUN source ~/.bashrc
-#  RUN nvm install 14.18.1 && nvm use 14.18.1
-#  RUN npm install -g node-gyp
-#  RUN npm install -g npm-remote-ls
-# cd ../../nodejs-expressions/
-# DOWNLOAD=1 npm install
-# node ~/.nvm/versions/node/v14.18.1/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js rebuild
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash && \
+    source ~/.bashrc && \
+    nvm install 16.14.0 && \
+    nvm install 14.19.0 && \
+    nvm install 12.22.10 && \
+    nvm install 10.20.0 && \
+    nvm use 16.14.0 && \
+    npm install -g node-gyp && \
+    npm install -g --force nodemon
 
 # for gdb build/install 
 # ../configure --prefix=/usr --with-system-readline --with-python=/usr/bin/python3 && 
@@ -64,8 +64,18 @@ RUN dnf -y install texi2html texinfo doxygen
 # rm -rf gdb/doc/doxy/xml
 # cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.2
 
+# RUN dnf -y install python38 python38-devel  python38-debug
+RUN dnf -y install wget
+RUN wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz && \
+    tar xzf Python-3.10.4.tgz && \
+    cd Python-3.10.4 && \
+    ./configure --with-pydebug --with-pymalloc="no" --with-valgrind --with-system-ffi --with-computed-gotos --enable-loadable-sqlite-extensions && \
+    make -j 6 && \ 
+    make install && \
+    rm -f Python-3.10.4.tgz 
+
 COPY ./requirements.txt /requirements.txt
-RUN python3.8 -m pip install -r /requirements.txt
+RUN python3.10 -m pip install -r /requirements.txt
 
 #RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64
 #RUN chmod +x /usr/local/bin/dumb-init
@@ -98,5 +108,6 @@ CMD [""]
 
 #How to
 #docker container rm as-client1
-#docker build . -t as-client-centos8-dev:v1
+#docker image build -f Dockerfile-client.yml -t as-client-centos8-dev:v1 .
 #docker run -it --network=as-bridge -v /Users/ramarajpandian/code/src:/code/src as-client-centos8-dev:v1 /bin/bash
+#ssh root@127.0.0.1 -p 2225

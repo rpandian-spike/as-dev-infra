@@ -10,11 +10,13 @@ export TRANSACTION_THREADS_PER_QUEUE=${TRANSACTION_THREADS_PER_QUEUE:-4}
 #export LOGFILE=${LOGFILE:-/dev/null}
 export SERVICE_ADDRESS=${SERVICE_ADDRESS:-any}
 export SERVICE_PORT=${SERVICE_PORT:-3000}
+export TLS_SERVICE_PORT=${TLS_SERVICE_PORT:-4333}
+export FABRIC_PORT=${FABRIC_PORT:-3002}
 export HB_ADDRESS=${HB_ADDRESS:-any}
 export HB_PORT=${HB_PORT:-3001}
 export FABRIC_ADDRESS=${FABRIC_ADDRESS:-any}
 export FABRIC_PORT=${FABRIC_PORT:-3002}
-export NAMESPACE=${NAMESPACE:-ssd-store}
+export NAMESPACE=${NAMESPACE:-test}
 export REPL_FACTOR=${REPL_FACTOR:-1}
 export MEM_GB=${MEM_GB:-1}
 export DEFAULT_TTL=${DEFAULT_TTL:-30d}
@@ -49,8 +51,8 @@ if [ "${1:0:1}" = '-' ]; then
 	set -- asd "$@"
 fi
 
-# if asd is specified for the command, start it with any given options
-if [ "$1" = '/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64/bin/asd' ]; then
+# # if asd is specified for the command, start it with any given options
+# if [ "$1" = '/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64/bin/asd' ]; then
 
 	NETLINK=${NETLINK:-eth0}
 
@@ -69,11 +71,13 @@ if [ "$1" = '/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64
 	done
 	#IFC=`/sbin/ifconfig | grep "inet"`
 	#echo "IFC: $IFC"
+	cat /etc/aerospike/aerospike.conf
 	IP=`/sbin/ifconfig | grep "inet" | grep "broadcast" | awk -F " " '{print $2}' | awk '{print $1}'`
 	echo "Node IP: $IP:$SERVICE_PORT"
 	echo "link $NETLINK state $(cat /sys/class/net/${NETLINK}/operstate) in ${NETLINK_COUNT}"
 	echo "launching "$@" --foreground"
-	echo "with service-port: $SERVICE_PORT, hb_port: ${HB_PORT} fabric_port: ${FABRIC_PORT} and info_port: ${INFO_PORT}"
+	echo "Cluster-Name: $AS_CLUSTER_NAME, TLS-Name: $TLS_CLUSTER_NAME"
+	echo "with service-port: $SERVICE_PORT, tls-service-port: $TLS_SERVICE_PORT, hb_port: ${HB_PORT} fabric_port: ${FABRIC_PORT} and info_port: ${INFO_PORT}"
 	# asd should always run in the foreground
 	#service ssh start &
 	passwd -d root &
@@ -82,8 +86,8 @@ if [ "$1" = '/code/src/aerospike/enterprise/aerospike-server/target/Linux-x86_64
 	"$@" &
 	wait
 	#set -- "$@" --foreground
-fi
+# fi
 
-# the command isn't asd so run the command the user specified
+# # the command isn't asd so run the command the user specified
 
-exec "$@"
+# exec "$@"

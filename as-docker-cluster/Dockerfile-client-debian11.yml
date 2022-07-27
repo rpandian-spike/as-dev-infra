@@ -9,7 +9,7 @@ RUN apt update
 RUN apt -y install software-properties-common
 RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt -y install build-essential
-RUN apt -y install openssh-server openssl-devel libssl-dev
+RUN apt -y install libssl-dev
 RUN apt -y install libarchive-dev cmake rsync curl libcurl4-openssl-dev zip
 RUN apt -y install python3 python3-dev python3-pip
 RUN curl https://bootstrap.pypa.io/get-pip.py
@@ -50,16 +50,41 @@ RUN curl https://bootstrap.pypa.io/get-pip.py
 # rm -rf gdb/doc/doxy/xml
 # cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.2
 
+RUN apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev \
+    libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev -y
+RUN apt -y install net-tools openssh-server wget libtool m4 automake
+
 COPY ./requirements.txt /requirements.txt
-RUN python3 -m pip install -r /requirements.txt
+RUN cd / && \
+    wget https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tar.xz && \
+    tar -xf Python-3.8.12.tar.xz && \
+    mv ./Python-3.8.12 /opt/Python-3.8.12 && \
+    cd /opt/Python-3.8.12/ && \
+    ./configure --enable-optimizations --enable-shared && \
+    make -j 8 && \
+    make altinstall && \
+    ldconfig /opt/Python-3.8.12 && \
+    python3 -m pip install -r /requirements.txt
 
-#RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64
-#RUN chmod +x /usr/local/bin/dumb-init
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash && \
+    . ~/.bashrc && \
+    nvm install 16.14.0 && \
+    nvm install 14.19.0 && \
+    nvm install 12.22.10 && \
+    nvm install 10.20.0 && \
+    nvm use 16.14.0 && \
+    npm install -g node-gyp && \
+    npm install -g --force nodemon
 
+RUN mkdir -p /var/run/sshd && \
+    echo "mkdir -p /var/run/sshd" >> /etc/rc.local
 RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config && \
     echo 'PermitEmptyPasswords yes' >> /etc/ssh/sshd_config && \
     echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config && \
     ssh-keygen -A
+
+#RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64
+#RUN chmod +x /usr/local/bin/dumb-init
 
 EXPOSE 23 
 # run the below command in container and connect to it using vscode
@@ -84,5 +109,5 @@ CMD [""]
 
 #How to
 #docker container rm as-client1
-#docker build . -t as-client-debian11-dev:v1
-#docker run -it --network=as-bridge -v /Users/ramarajpandian/code/src:/code/src as-client-ubuntu18-dev:v1 /bin/bash
+#docker run -it --network=as-bridge -v /Users/ramarajpandian/code/src:/code/src as-client-debian11-dev:v1 /bin/bash
+#docker image build -f Dockerfile-client-debian11.yml -t as-client-debian11-dev:v1 .

@@ -1,6 +1,6 @@
 enable;
 manage acl create role quota-4k-2k-role priv read-write-udf;
-manage acl create user generic_client password generic_client roles data-admin user-admin sys-admin read-write read-write-udf quota-4k-2k-role;
+manage acl create user generic_client password generic_client roles data-admin user-admin sys-admin read-write read-write-udf quota-4k-2k-role sindex-admin truncate;
 manage acl create user ram password ram roles data-admin user-admin sys-admin read-write read-write-udf;
 #manage acl quotas role quota-4k-2k-role read 4000 write 2000;
 show users;

@@ -49,12 +49,11 @@ RUN mkdir /etc/aerospike
 ENV EEREPO /code/src/aerospike/enterprise/aerospike-server-enterprise/
 ENV USE_EE 1
 
-# export EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
-# export USE_EE=1
 # export MACOSX_DEPLOYMENT_TARGET=21.2.0
 # #USE_JEM=0
 # #brew install jemalloc
-# make cleanall
+# export EEREPO=/code/src/aerospike/enterprise/aerospike-server-enterprise/
+# export USE_EE=1
 # make cleanall
 # make +ee
 

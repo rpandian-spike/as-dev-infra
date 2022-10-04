@@ -64,18 +64,7 @@ RUN dnf -y install texi2html texinfo doxygen
 # rm -rf gdb/doc/doxy/xml
 # cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.2
 
-# RUN dnf -y install python38 python38-devel  python38-debug
-RUN dnf -y install wget
-RUN wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz && \
-    tar xzf Python-3.10.4.tgz && \
-    cd Python-3.10.4 && \
-    ./configure --with-pydebug --with-pymalloc="no" --with-valgrind --with-system-ffi --with-computed-gotos --enable-loadable-sqlite-extensions && \
-    make -j 6 && \ 
-    make install && \
-    rm -f Python-3.10.4.tgz 
-
-COPY ./requirements.txt /requirements.txt
-RUN python3.10 -m pip install -r /requirements.txt
+RUN dnf -y install valgrind
 
 #RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64
 #RUN chmod +x /usr/local/bin/dumb-init
@@ -103,11 +92,28 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini.asc /
 #  && gpg --batch --verify /tini.asc /tini
 RUN chmod +x /tini
 
+COPY ./requirements.txt /requirements.txt
+
+RUN dnf -y install python38 python38-devel  python38-debug
+
+# RUN dnf -y install wget
+# RUN wget https://www.python.org/ftp/python/3.10.6/Python-3.10.6.tgz
+# RUN tar xzf Python-3.10.6.tgz
+# RUN cd Python-3.10.6 && \
+#     ./configure --with-pydebug --without-pymalloc --with-valgrind --with-system-ffi --with-computed-gotos --enable-loadable-sqlite-extensions && \
+#     make -j 6 && \ 
+#     make install && \
+#     rm -f Python-3.10.6.tgz 
+
+RUN python3 -m pip install -r /requirements.txt
+
 ENTRYPOINT ["/tini", "--", "/as-client_entrypoint.sh"]
 CMD [""]
 
 #How to
 #docker container rm as-client1
 #docker image build -f Dockerfile-client.yml -t as-client-centos8-dev:v1 .
-#docker run -it --network=as-bridge -v /Users/ramarajpandian/code/src:/code/src as-client-centos8-dev:v1 /bin/bash
+#docker run -it -v /Users/ramarajpandian/code/src/:/code/src --name as-client1 as-client-centos8-dev:v1
 #ssh root@127.0.0.1 -p 2225
+#valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt python3 test_memleak.py
+#/Users/ramarajpandian/code/src/aerospike/enterprise/aerospike-admin/build/bin/asadm/asadm -e /Users/ramarajpandian/code/src/aerospike/enterprise/as-dev-infra/as-docker-cluster/asadm-setup --enable -U admin -P admin -h 172.17.0.3 -p 3000
